@@ -10,6 +10,7 @@ export interface LoadSitesMessage {
   reverse: boolean
   deduplicate: boolean
   handleAsSearchQuery: boolean
+  removeQueryString: boolean
   selectedTabGroupId: number | null | undefined
   selectedContainerId: string | null | undefined
 }

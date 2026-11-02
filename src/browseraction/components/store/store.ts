@@ -12,6 +12,7 @@ export const store = reactive({
   preserveInputChecked: false,
   deduplicateURLsChecked: false,
   handleAsSearchQueryChecked: false,
+  removeQueryStringChecked: false,
 
   hasTabGroupSupport: false,
   tabGroups: [] as TabGroup[],
@@ -59,5 +60,9 @@ export const store = reactive({
   setHandleAsSearchQueryChecked(value: boolean) {
     this.handleAsSearchQueryChecked = value
     browser.storage.local.set({ [BrowserStorageKey.handleAsSearchQuery]: value })
+  },
+  setRemoveQueryStringChecked(value: boolean) {
+    this.removeQueryStringChecked = value
+    browser.storage.local.set({ [BrowserStorageKey.removeQueryString]: value })
   }
 })

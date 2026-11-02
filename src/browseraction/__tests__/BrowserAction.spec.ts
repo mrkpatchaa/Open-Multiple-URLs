@@ -56,6 +56,7 @@ describe('browser action', () => {
     expect(wrapper.text()).toContain('Preserve input')
     expect(wrapper.text()).toContain('Ignore duplicate URLs')
     expect(wrapper.text()).toContain('Handle Non-URLs as search queries')
+    expect(wrapper.text()).toContain('Remove query strings')
   })
 
   describe('features', () => {
@@ -84,6 +85,7 @@ describe('browser action', () => {
         action: 'loadSites',
         deduplicate: false,
         handleAsSearchQuery: false,
+        removeQueryString: false,
         lazyloading: false,
         random: false,
         reverse: false,
@@ -158,7 +160,8 @@ describe('browser action', () => {
           reverse: false,
           preserve: false,
           deduplicate: false,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -170,7 +173,8 @@ describe('browser action', () => {
           reverse: false,
           preserve: false,
           deduplicate: false,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -182,7 +186,8 @@ describe('browser action', () => {
           reverse: false,
           preserve: false,
           deduplicate: false,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -194,7 +199,8 @@ describe('browser action', () => {
           reverse: true,
           preserve: false,
           deduplicate: false,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -206,7 +212,8 @@ describe('browser action', () => {
           reverse: false,
           preserve: true,
           deduplicate: false,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -218,7 +225,8 @@ describe('browser action', () => {
           reverse: false,
           preserve: false,
           deduplicate: true,
-          searchquery: false
+          searchquery: false,
+          removequery: false
         }
       },
       {
@@ -230,7 +238,21 @@ describe('browser action', () => {
           reverse: false,
           preserve: false,
           deduplicate: false,
-          searchquery: true
+          searchquery: true,
+          removequery: false
+        }
+      },
+      {
+        storeKey: BrowserStorageKey.removeQueryString,
+        value: 'true',
+        expectedStates: {
+          lazyLoad: false,
+          random: false,
+          reverse: false,
+          preserve: false,
+          deduplicate: false,
+          searchquery: false,
+          removequery: true
         }
       }
     ]
@@ -266,6 +288,9 @@ describe('browser action', () => {
         expect(
           (wrapper.find('input[type="checkbox"]#searchquery').element as HTMLInputElement).checked
         ).toBe(expectedStates.searchquery)
+        expect(
+          (wrapper.find('input[type="checkbox"]#removequery').element as HTMLInputElement).checked
+        ).toBe(expectedStates.removequery)
       }
     )
   })
@@ -290,7 +315,8 @@ describe('browser action', () => {
       { checkboxId: 'reverse', storeKey: BrowserStorageKey.reverse },
       { checkboxId: 'preserve', storeKey: BrowserStorageKey.preserve },
       { checkboxId: 'deduplicate', storeKey: BrowserStorageKey.deduplicate },
-      { checkboxId: 'searchquery', storeKey: BrowserStorageKey.handleAsSearchQuery }
+      { checkboxId: 'searchquery', storeKey: BrowserStorageKey.handleAsSearchQuery },
+      { checkboxId: 'removequery', storeKey: BrowserStorageKey.removeQueryString }
     ]
     it.each(storeCheckStateTestCases)(
       'stores $checkboxId check state',

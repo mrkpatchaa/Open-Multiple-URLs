@@ -70,6 +70,23 @@ import { NO_LAZY_LOAD_SCHEMES } from './logic/urlschema'
         />
         Handle Non-URLs as search queries</label
       >
+      <label class="checkbox"
+        ><input
+          type="checkbox"
+          id="removequery"
+          tabindex="6"
+          :checked="store.removeQueryStringChecked"
+          @change="checkRemoveQueryString"
+        />
+        Remove query strings &nbsp;<span
+          aria-label="Removes everything after '?' in URLs (e.g. tracking parameters). Some sites need these parameters to work."
+          data-microtip-position="bottom"
+          data-microtip-size="large"
+          role="tooltip"
+        >
+          ⓘ
+        </span>
+      </label>
     </section>
   </section>
   <!-- Input handling options -->
@@ -118,6 +135,11 @@ export default {
     checkHandleAsSearchQuery(event: Event) {
       this.$nextTick(() => {
         store.setHandleAsSearchQueryChecked((event?.target as HTMLInputElement).checked)
+      })
+    },
+    checkRemoveQueryString(event: Event) {
+      this.$nextTick(() => {
+        store.setRemoveQueryStringChecked((event?.target as HTMLInputElement).checked)
       })
     }
   }

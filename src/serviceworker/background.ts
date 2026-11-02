@@ -14,7 +14,8 @@ export const loadSitesListener = async (message: any) => {
       loadSitesMessage.deduplicate,
       loadSitesMessage.handleAsSearchQuery,
       loadSitesMessage.selectedTabGroupId,
-      loadSitesMessage.selectedContainerId
+      loadSitesMessage.selectedContainerId,
+      loadSitesMessage.removeQueryString
     )
   }
   return false

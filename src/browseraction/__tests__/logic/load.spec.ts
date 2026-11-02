@@ -2,7 +2,12 @@ import browser from 'webextension-polyfill'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { NEW_TAB_GROUP_ID, NO_TAB_GROUP_ID } from '@/browseraction/components/logic/tabgroups'
 import { NEW_CONTAINER_ID, NO_CONTAINER_ID } from '@/browseraction/components/logic/containers'
-import { getTabCount, loadSites, splitInputLines } from '@/browseraction/components/logic/load'
+import {
+  getTabCount,
+  loadSites,
+  removeQueryString,
+  splitInputLines
+} from '@/browseraction/components/logic/load'
 
 const MOCK_TAB_GROUP_ID = 42
 const MOCK_CONTAINER_ID = '123-container'
@@ -130,6 +135,23 @@ describe('load tabs', () => {
     expect(getTabCount(`${urlList}\n`.repeat(100), true)).toBe(2)
   })
 
+  it('removes query strings', () => {
+    expect(removeQueryString('https://test.de/a?utm_source=x&b=1')).toBe('https://test.de/a')
+    expect(removeQueryString('https://test.de/a?b=1#section')).toBe('https://test.de/a#section')
+    expect(removeQueryString('https://test.de/a#section?b=1')).toBe('https://test.de/a#section?b=1')
+    expect(removeQueryString('https://test.de/a')).toBe('https://test.de/a')
+    expect(removeQueryString('  https://test.de/a?b=1  ')).toBe('https://test.de/a')
+    expect(removeQueryString('what is this?')).toBe('what is this?')
+    expect(removeQueryString('test.de/a?b=1')).toBe('test.de/a?b=1')
+  })
+
+  it('counts tabs after removing query strings', () => {
+    const text = 'https://test.de/a?x=1\nhttps://test.de/a?x=2\nhttps://test.de/a'
+    expect(getTabCount(text, true)).toBe(3)
+    expect(getTabCount(text, true, true)).toBe(1)
+    expect(getTabCount(text, false, true)).toBe(3)
+  })
+
   it('gets urls from text', () => {
     expect(splitInputLines('', false)).toEqual([])
     expect(splitInputLines('\n\n', false)).toEqual([])
@@ -195,6 +217,24 @@ describe('load tabs', () => {
 
     expect(tabCreateMock).toHaveBeenCalledTimes(3)
     expect(browser.search.query).toBeCalledWith({ text: 'test', tabId: 42 })
+  })
+
+  it('removes query strings before deduplicating', async () => {
+    const text = 'https://test.de/a?x=1\nhttps://test.de/a?x=2#top\nhttps://test.de/a?x=3'
+    await loadSites(text, false, false, false, true, false, null, undefined, true)
+
+    expect(tabCreateMock).toHaveBeenNthCalledWith(1, { url: 'https://test.de/a', active: false })
+    expect(tabCreateMock).toHaveBeenNthCalledWith(2, {
+      url: 'https://test.de/a#top',
+      active: false
+    })
+    expect(tabCreateMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps query strings by default', async () => {
+    await loadSites('https://test.de/a?x=1', false, false, false, false, false, null)
+
+    expect(tabCreateMock).toHaveBeenCalledWith({ url: 'https://test.de/a?x=1', active: false })
   })
 
   it('does not handle non-url as search query', async () => {

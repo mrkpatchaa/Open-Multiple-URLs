@@ -69,6 +69,7 @@ describe('browser action', () => {
     expect(wrapper.text()).toContain('Preserve input')
     expect(wrapper.text()).toContain('Ignore duplicate URLs')
     expect(wrapper.text()).toContain('Handle Non-URLs as search queries')
+    expect(wrapper.text()).toContain('Remove query strings')
   })
 
   describe('features', () => {
@@ -88,6 +89,7 @@ describe('browser action', () => {
         action: 'loadSites',
         deduplicate: false,
         handleAsSearchQuery: false,
+        removeQueryString: false,
         lazyloading: false,
         random: false,
         reverse: false,
@@ -113,6 +115,7 @@ describe('browser action', () => {
         action: 'loadSites',
         deduplicate: false,
         handleAsSearchQuery: false,
+        removeQueryString: false,
         lazyloading: false,
         random: false,
         reverse: false,
