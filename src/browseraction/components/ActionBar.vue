@@ -66,7 +66,8 @@ export default {
         deduplicate: store.deduplicateURLsChecked,
         handleAsSearchQuery: store.handleAsSearchQueryChecked,
         selectedTabGroupId: this.selectedTabGroupId,
-        selectedContainerId: this.selectedContainerId
+        selectedContainerId: this.selectedContainerId,
+        removeQueryString: store.removeQueryStringChecked
       }
       browser.runtime.sendMessage(message).then(() => {
         loadTabGroups().then((tabGroups) => {
@@ -93,7 +94,11 @@ export default {
   },
   computed: {
     tabCount: function () {
-      return getTabCount(store.urlList, store.deduplicateURLsChecked)
+      return getTabCount(
+        store.urlList,
+        store.deduplicateURLsChecked,
+        store.removeQueryStringChecked
+      )
     },
     tabGroupsSupported: function () {
       return store.hasTabGroupSupport

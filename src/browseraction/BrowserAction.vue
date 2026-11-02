@@ -25,6 +25,7 @@ Promise.all([
   store.deduplicateURLsChecked = Boolean(data[0][BrowserStorageKey.deduplicate]) ?? false
   store.handleAsSearchQueryChecked =
     Boolean(data[0][BrowserStorageKey.handleAsSearchQuery]) ?? false
+  store.removeQueryStringChecked = Boolean(data[0][BrowserStorageKey.removeQueryString]) ?? false
 
   // tab groups (Chrome only)
   store.hasTabGroupSupport = Boolean(browser.tabGroups) ?? false

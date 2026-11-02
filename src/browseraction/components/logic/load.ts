@@ -19,14 +19,42 @@ const shuffle = (a: string[]) => {
 }
 
 /**
+ * Removes the query string from a URL, keeping any fragment.
+ * Lines that are not URLs with a scheme (e.g. search queries) are returned unchanged.
+ * @param {string} line The line to process.
+ * @returns {string} The line without its query string.
+ */
+export const removeQueryString = (line: string): string => {
+  const trimmed = line.trim()
+  if (!hasValidSchema(trimmed)) {
+    return line
+  }
+  const queryIndex = trimmed.indexOf('?')
+  const hashIndex = trimmed.indexOf('#')
+  // no query, or the '?' is part of the fragment
+  if (queryIndex === -1 || (hashIndex !== -1 && hashIndex < queryIndex)) {
+    return line
+  }
+  return trimmed.slice(0, queryIndex) + (hashIndex !== -1 ? trimmed.slice(hashIndex) : '')
+}
+
+/**
  * Splits input text into lines and removes duplicates if specified.
  * @param {string} text The input text to split.
  * @param {boolean} deduplicate Whether to remove duplicate lines.
+ * @param {boolean} stripQueryString Whether to remove query strings from URLs.
  * @returns {string[]} An array of lines from the input text.
  */
-export const splitInputLines = (text: string, deduplicate: boolean): string[] => {
+export const splitInputLines = (
+  text: string,
+  deduplicate: boolean,
+  stripQueryString: boolean = false
+): string[] => {
   const urlLineSplitRegex = /\r\n?|\n/g
-  const urls = text.split(urlLineSplitRegex).filter((line) => line.trim() !== '')
+  let urls = text.split(urlLineSplitRegex).filter((line) => line.trim() !== '')
+  if (stripQueryString) {
+    urls = urls.map(removeQueryString)
+  }
   return deduplicate ? Array.from(new Set(urls)) : urls
 }
 
@@ -40,6 +68,7 @@ export const splitInputLines = (text: string, deduplicate: boolean): string[] =>
  * @param {boolean} handleAsSearchQuery Whether to handle as search query.
  * @param {number|null|undefined} selectedTabGroupId The ID of the selected tab group.
  * @param {string|null|undefined} selectedContainerId The ID of the selected container.
+ * @param {boolean} stripQueryString Whether to remove query strings from URLs.
  */
 export const loadSites = async (
   text: string,
@@ -49,9 +78,10 @@ export const loadSites = async (
   deduplicate: boolean,
   handleAsSearchQuery: boolean,
   selectedTabGroupId: number | null | undefined = undefined,
-  selectedContainerId: string | null | undefined = undefined
+  selectedContainerId: string | null | undefined = undefined,
+  stripQueryString: boolean = false
 ): Promise<void> => {
-  let lines = splitInputLines(text, deduplicate)
+  let lines = splitInputLines(text, deduplicate, stripQueryString)
 
   if (reverse) {
     lines = lines.reverse()
@@ -118,6 +148,10 @@ export const loadSites = async (
   }
 }
 
-export const getTabCount = (text: string, deduplicate: boolean) => {
-  return text ? splitInputLines(text, deduplicate).length : 0
+export const getTabCount = (
+  text: string,
+  deduplicate: boolean,
+  stripQueryString: boolean = false
+) => {
+  return text ? splitInputLines(text, deduplicate, stripQueryString).length : 0
 }
